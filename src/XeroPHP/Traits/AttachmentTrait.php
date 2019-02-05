@@ -12,14 +12,14 @@ trait AttachmentTrait
     public function addAttachment(Attachment $attachment, $include_online = false)
     {
         /**
-         * @var Object $this
+         * @var \XeroPHP\Remote\Model $this
          */
         $uri = sprintf('%s/%s/Attachments/%s', $this::getResourceURI(), $this->getGUID(), rawurlencode($attachment->getFileName()));
 
         $url = new URL($this->_application, $uri);
         $request = new Request($this->_application, $url, Request::METHOD_POST);
 
-        if($include_online){
+        if ($include_online) {
             $request->setParameter('IncludeOnline', 'true');
         }
 
@@ -40,7 +40,7 @@ trait AttachmentTrait
     public function getAttachments()
     {
         /**
-         * @var Object $this
+         * @var \XeroPHP\Remote\Model $this
          */
         if ($this->hasGUID() === false) {
             throw new Exception(

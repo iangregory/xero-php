@@ -16,10 +16,10 @@ trait SendEmailTrait
          * Invoice status should be SUBMITTED, AUTHORISED or PAID.
          * The email address for the Contact should also be set.
          *
-         * Documentation here: 
+         * Documentation here:
          * https://developer.xero.com/documentation/api/invoices#email
          *
-         * @var Object $this
+         * @var \XeroPHP\Remote\Model $this
          */
         $uri = sprintf('%s/%s/Email', $this::getResourceURI(), $this->getGUID());
         

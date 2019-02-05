@@ -39,7 +39,7 @@ class History extends Model
      *
      * @return string
      */
-    static function getGUIDProperty()
+    public static function getGUIDProperty()
     {
         return '';
     }
@@ -49,14 +49,14 @@ class History extends Model
      *
      * @return array
      */
-    static function getProperties()
+    public static function getProperties()
     {
-        return array(
-            'Changes' => array(false, self::PROPERTY_TYPE_STRING, null, false, false),
+        return [
+            'Changes' => [false, self::PROPERTY_TYPE_STRING, null, false, false],
             'DateUTC' => [false, self::PROPERTY_TYPE_TIMESTAMP, '\\DateTimeInterface', false, false],
-            'User' => array(false, self::PROPERTY_TYPE_STRING, null, false, false),
-            'Details' => array(true, self::PROPERTY_TYPE_STRING, null, false, false)
-        );
+            'User' => [false, self::PROPERTY_TYPE_STRING, null, false, false],
+            'Details' => [true, self::PROPERTY_TYPE_STRING, null, false, false]
+        ];
     }
 
     /**
@@ -64,12 +64,12 @@ class History extends Model
      *
      * @return array
      */
-    static function getSupportedMethods()
+    public static function getSupportedMethods()
     {
-        return array(
+        return [
             Request::METHOD_GET,
             Request::METHOD_PUT
-        );
+        ];
     }
 
     /**
@@ -77,7 +77,7 @@ class History extends Model
      *
      * @return string
      */
-    static function getResourceURI()
+    public static function getResourceURI()
     {
         return '';
     }
@@ -125,12 +125,12 @@ class History extends Model
         return false;
     }
 
-    static function getAPIStem()
+    public static function getAPIStem()
     {
         return '';
     }
 
-    static function getRootNodeName()
+    public static function getRootNodeName()
     {
         // TODO: Implement getRootNodeName() method.
     }

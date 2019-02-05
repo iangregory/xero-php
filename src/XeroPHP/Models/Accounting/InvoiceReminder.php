@@ -3,7 +3,7 @@ namespace XeroPHP\Models\Accounting;
 
 use XeroPHP\Remote;
 
-class InvoiceReminder extends Remote\Object
+class InvoiceReminder extends Remote\Model
 {
 
 
@@ -98,5 +98,4 @@ class InvoiceReminder extends Remote\Object
     {
         return $this->_data['Enabled'];
     }
-
 }
