@@ -2,9 +2,9 @@
 
 namespace XeroPHP\tests;
 
+use XeroPHP\Webhook;
 use XeroPHP\Application;
 use XeroPHP\Application\PrivateApplication;
-use XeroPHP\Webhook;
 
 class EventTest extends \PHPUnit_Framework_TestCase
 {
@@ -13,19 +13,19 @@ class EventTest extends \PHPUnit_Framework_TestCase
      */
     private $application;
 
-    public function setUp()
+    protected function setUp()
     {
         $config = [
             'oauth' => [
-                'callback'    => 'oob',
-                'consumer_key'      => 'k',
-                'consumer_secret'   => 's',
-                'rsa_private_key'  => 'file://certs/private.pem',
-                'rsa_public_key'   => 'file://certs/public.pem'
+                'callback' => 'oob',
+                'consumer_key' => 'k',
+                'consumer_secret' => 's',
+                'rsa_private_key' => 'file://certs/private.pem',
+                'rsa_public_key' => 'file://certs/public.pem',
             ],
             'webhook' => [
                 'signing_key' => 'test_key',
-            ]
+            ],
         ];
 
         $this->application = new PrivateApplication($config);
