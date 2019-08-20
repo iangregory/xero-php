@@ -12,14 +12,7 @@ interface ObjectInterface
     public static function getGUIDProperty();
 
     /**
-     * Get a list of properties.
-     *
-     * @return array
-     */
-    public static function getProperties();
-
-    /**
-     * Get a list of the supported HTTP Methods.
+     * Get a list of the supported HTTP Methods
      *
      * @return array
      */
@@ -32,9 +25,31 @@ interface ObjectInterface
      */
     public static function getResourceURI();
 
+    /**
+     * Get the root node element
+     *
+     * @return string
+     */
     public static function getRootNodeName();
 
+    /**
+     * Get the API stem
+     *
+     * @return string
+     */
     public static function getAPIStem();
 
+    /**
+     * Is pageable
+     *
+     * @return boolean
+     */
     public static function isPageable();
+
+    /**
+     * Get a list of properties
+     *
+     * @return array
+     */
+    public static function getProperties();
 }

@@ -16,24 +16,16 @@ use XeroPHP\Remote\Exception\OrganisationOfflineException;
 class Response
 {
     const STATUS_OK = 200;
-
     const STATUS_BAD_REQUEST = 400;
-
     const STATUS_UNAUTHORISED = 401;
-
     const STATUS_FORBIDDEN = 403;
-
     const STATUS_NOT_FOUND = 404;
-
     const STATUS_INTERNAL_ERROR = 500;
-
     const STATUS_NOT_IMPLEMENTED = 501;
 
     //Seriously, 1 code for 3 different things!
     const STATUS_NOT_AVAILABLE = 503;
-
     const STATUS_RATE_LIMIT_EXCEEDED = 503;
-
     const STATUS_ORGANISATION_OFFLINE = 503;
 
     private $request;
@@ -48,22 +40,23 @@ class Response
 
     private $oauth_response;
 
-    private $elements;
+    private $elements = [];
 
     private $element_errors;
 
     private $element_warnings;
 
     private $root_error;
+    private $pagination;
 
     public function __construct(Request $request, $response_body, array $curl_info, $headers)
     {
         $this->request = $request;
         $this->response_body = $response_body;
-        $this->status = $curl_info['http_code'];
+        $this->status = $curl_info[ 'http_code' ];
         $this->headers = $headers;
 
-        list($this->content_type) = explode(';', $curl_info['content_type']);
+        list($this->content_type) = explode(';', $curl_info[ 'content_type' ]);
     }
 
     /**
@@ -84,11 +77,12 @@ class Response
         switch ($this->status) {
             case self::STATUS_BAD_REQUEST:
                 //This catches actual app errors
-                if (isset($this->root_error) && ! empty($this->root_error)) {
-                    $message = sprintf('%s (%s)', $this->root_error['message'], implode(', ', $this->element_errors));
+                if (isset($this->root_error) && !empty($this->root_error)) {
+                    $message = sprintf('%s (%s)', $this->root_error[ 'message' ], implode(', ', $this->element_errors));
                     $message .= $this->parseBadRequest();
-
-                    throw new BadRequestException($message, $this->root_error['code']);
+                    throw new BadRequestException($message, $this->root_error[ 'code' ]);
+                } else {
+                    throw new BadRequestException();
                 }
 
                 throw new BadRequestException();
@@ -98,8 +92,8 @@ class Response
             // no break
             case self::STATUS_UNAUTHORISED:
                 //This is where OAuth errors end up, this could maybe change to an OAuth exception
-                if (isset($this->oauth_response['oauth_problem_advice'])) {
-                    throw new UnauthorizedException($this->oauth_response['oauth_problem_advice']);
+                if (isset($this->oauth_response[ 'oauth_problem_advice' ])) {
+                    throw new UnauthorizedException($this->oauth_response[ 'oauth_problem_advice' ]);
                 }
                 // no break
             case self::STATUS_FORBIDDEN:
@@ -121,9 +115,8 @@ class Response
                 $response = urldecode($this->response_body);
                 if (false !== stripos($response, 'Organisation is offline')) {
                     throw new OrganisationOfflineException();
-                }
-                if (false !== stripos($response, 'Rate limit exceeded')) {
-                    $problem = isset($this->headers['x-rate-limit-problem']) ? current($this->headers['x-rate-limit-problem']) : null;
+                } elseif (false !== stripos($response, 'Rate limit exceeded')) {
+                    $problem = isset($this->headers[ 'x-rate-limit-problem' ]) ? current($this->headers[ 'x-rate-limit-problem' ]) : null;
                     $exception = new RateLimitExceededException();
                     $exception->setRateLimitProblem($problem);
 
@@ -142,16 +135,15 @@ class Response
         if (! empty($this->elements)) {
             $field_errors = [];
             foreach ($this->elements as $n => $element) {
-                if (isset($element['ValidationErrors'])) {
-                    $field_errors[] = $element['ValidationErrors'][0]['Message'];
+                if (isset($element[ 'ValidationErrors' ])) {
+                    $field_errors[] = $element[ 'ValidationErrors' ][ 0 ][ 'Message' ];
                 }
             }
-
-            return "\nValidation errors:\n".implode("\n", $field_errors);
+            return "\nValidation errors:\n" . implode("\n", $field_errors);
         }
 
-        if (isset($this->oauth_response['oauth_problem_advice'])) {
-            throw new UnauthorizedException($this->oauth_response['oauth_problem_advice']);
+        if (isset($this->oauth_response[ 'oauth_problem_advice' ])) {
+            throw new UnauthorizedException($this->oauth_response[ 'oauth_problem_advice' ]);
         }
 
         return '';
@@ -174,11 +166,11 @@ class Response
 
     public function getErrorsForElement($element_id)
     {
-        if (isset($this->element_errors[$element_id])) {
-            return $this->element_errors[$element_id];
+        if (isset($this->element_errors[ $element_id ])) {
+            return $this->element_errors[ $element_id ];
         }
 
-        
+
     }
 
     public function getElementErrors()
@@ -199,6 +191,11 @@ class Response
     public function getOAuthResponse()
     {
         return $this->oauth_response;
+    }
+
+    public function getPagination()
+    {
+        return $this->pagination;
     }
 
     public function parseBody()
@@ -231,8 +228,7 @@ class Response
                 break;
 
             default:
-                //Don't try to parse anything else.
-                return;
+                $this->parseJSON();
         }
 
         foreach ($this->elements as $index => $element) {
@@ -242,12 +238,16 @@ class Response
 
     public function findElementErrors($element, $element_index)
     {
+        if (!is_array($element)) {
+            return;
+        }
+
         foreach ($element as $property => $value) {
-            switch ((string) $property) {
+            switch ((string)$property) {
                 case 'ValidationErrors':
                     if (is_array($value)) {
                         foreach ($value as $error) {
-                            $this->element_errors[$element_index] = trim($error['Message'], '.');
+                            $this->element_errors[ $element_index ] = trim($error[ 'Message' ], '.');
                         }
                     }
 
@@ -255,7 +255,7 @@ class Response
                 case 'Warnings':
                     if (is_array($value)) {
                         foreach ($value as $warning) {
-                            $this->element_warnings[$element_index] = trim($warning['Message'], '.');
+                            $this->element_warnings[ $element_index ] = trim($warning[ 'Message' ], '.');
                         }
                     }
 
@@ -279,16 +279,13 @@ class Response
         foreach ($sxml as $child_index => $root_child) {
             switch ($child_index) {
                 case 'ErrorNumber':
-                    $this->root_error['code'] = (string) $root_child;
-
+                    $this->root_error[ 'code' ] = (string)$root_child;
                     break;
                 case 'Type':
-                    $this->root_error['type'] = (string) $root_child;
-
+                    $this->root_error[ 'type' ] = (string)$root_child;
                     break;
                 case 'Message':
-                    $this->root_error['message'] = (string) $root_child;
-
+                    $this->root_error[ 'message' ] = (string)$root_child;
                     break;
                 case 'Payslip':
                 case 'PayItems':
@@ -314,15 +311,32 @@ class Response
         foreach ($json as $child_index => $root_child) {
             switch ($child_index) {
                 case 'ErrorNumber':
-                    $this->root_error['code'] = $root_child;
-
+                    $this->root_error[ 'code' ] = $root_child;
                     break;
                 case 'Type':
-                    $this->root_error['type'] = $root_child;
-
+                    $this->root_error[ 'type' ] = $root_child;
                     break;
                 case 'Message':
-                    $this->root_error['message'] = $root_child;
+                    $this->root_error[ 'message' ] = $root_child;
+                    break;
+                case 'problem':
+                    if (!is_null($root_child)) {
+                        $this->root_error[ 'code' ] = $root_child[ 'status' ];
+                        $this->root_error[ 'type' ] = $root_child[ 'title' ];
+                        $this->root_error[ 'message' ] = $root_child[ 'detail' ];
+
+                        if (is_array($root_child[ 'invalidFields' ])) {
+                            $this->element_errors = array_merge(
+                                $this->element_errors,
+                                array_map(
+                                    function ($element) {
+                                        return $element[ 'name' ];
+                                    },
+                                    $root_child[ 'invalidFields' ]
+                                )
+                            );
+                        }
+                    }
 
                     break;
                 case 'Payslip':
@@ -331,14 +345,17 @@ class Response
                     $this->elements[] = $root_child;
 
                     break;
-
+                case 'pagination':
+                    $this->pagination = $root_child;
+                    break;
                 default:
                     //Happy to make the assumption that there will only be one
                     //root node with > than 2D children.
                     if (is_array($root_child)) {
-                        foreach ($root_child as $element) {
-                            $this->elements[] = $element;
-                        }
+                        $this->elements = array_merge(
+                            $this->elements,
+                            $root_child
+                        );
                     }
             }
         }

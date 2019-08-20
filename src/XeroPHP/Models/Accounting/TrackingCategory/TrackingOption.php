@@ -31,7 +31,7 @@ class TrackingOption extends Remote\Model
      */
     public static function getResourceURI()
     {
-        return 'TrackingOptions';
+        return 'Options';
     }
 
     /**
@@ -41,7 +41,7 @@ class TrackingOption extends Remote\Model
      */
     public static function getRootNodeName()
     {
-        return 'TrackingOption';
+        return '';
     }
 
     /**
@@ -70,6 +70,8 @@ class TrackingOption extends Remote\Model
     public static function getSupportedMethods()
     {
         return [
+            Remote\Request::METHOD_POST,
+            Remote\Request::METHOD_DELETE
         ];
     }
 
