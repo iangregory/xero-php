@@ -144,6 +144,7 @@ class LineItem extends Remote\Model
     public static function getProperties()
     {
         return [
+            'LineItemID' => [false, self::PROPERTY_TYPE_STRING, null, false, false],
             'Description' => [false, self::PROPERTY_TYPE_STRING, null, false, false],
             'Quantity' => [false, self::PROPERTY_TYPE_STRING, null, false, false],
             'UnitAmount' => [false, self::PROPERTY_TYPE_FLOAT, null, false, false],
@@ -355,6 +356,4 @@ class LineItem extends Remote\Model
         $this->_data['DiscountRate'] = $value;
         return $this;
     }
-
-
 }

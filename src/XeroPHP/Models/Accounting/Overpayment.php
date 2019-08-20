@@ -3,13 +3,14 @@ namespace XeroPHP\Models\Accounting;
 
 use XeroPHP\Remote;
 use XeroPHP\Traits\AttachmentTrait;
+use XeroPHP\Traits\HistoryTrait;
 use XeroPHP\Models\Accounting\Overpayment\LineItem;
 use XeroPHP\Models\Accounting\Overpayment\Allocation;
 
 class Overpayment extends Remote\Model
 {
-
     use AttachmentTrait;
+    use HistoryTrait;
 
     /**
      * This property has been removed from the Xero API
@@ -603,6 +604,7 @@ class Overpayment extends Remote\Model
      * @deprecated - this is a read only property and this method will be removed in future versions
      * @param $value
      */
-    public function setHasAttachment($value){}
-
+    public function setHasAttachment($value)
+    {
+    }
 }
